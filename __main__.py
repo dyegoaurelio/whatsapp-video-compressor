@@ -1,9 +1,9 @@
 import sys
 from subprocess import run
 from os import system, path
-from math import ceil
+from math import floor
 
-MAX_BITS = 15.75 * 8000
+MAX_BITS = 15.9 * 8000
 filepath = sys.argv[-1]
 
 
@@ -14,7 +14,7 @@ def get_duration(path):
 file_size = path.getsize(filepath)
 duration = get_duration(filepath)
 
-bitrate = ceil(MAX_BITS / duration) - 128
+bitrate = floor(MAX_BITS / duration) - 128
 
 
 filename = filepath.split('/')[-1]
@@ -23,3 +23,7 @@ file_title = filename[:-len(file_extension) - 1]
 
 system(f'ffmpeg -y -i {filepath} -c:v libx264 -b:v {bitrate}k -pass 1 -vsync cfr -f null /dev/null && \
 ffmpeg -i {filepath} -c:v libx264 -b:v {bitrate}k -pass 2 -c:a aac -b:a 128k {file_title}-WHATSAPP.mp4')
+
+folder = path.dirname(path.realpath(filepath))
+
+system(f'rm {folder}/ffmpeg2pass-0.log*')
