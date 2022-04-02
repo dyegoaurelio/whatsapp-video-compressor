@@ -58,7 +58,7 @@ def main():
         if out_size > MAX_SIZE:
             print(
                 f'\n------------------\n'
-                f'Tamanho maior do que 16mb ({out_size*1e-6:.2f} mb)'
+                f'Tamanho maior do que {MAX_SIZE*1e-6:.2f} mb ({out_size*1e-6:.2f} mb)'
                 'recomprimindo ...'
                 '\n------------------\n'
             )
