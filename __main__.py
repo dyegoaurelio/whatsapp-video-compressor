@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import sys
 from subprocess import run
 from os import system, path, rename, remove
@@ -6,7 +8,6 @@ from math import floor
 MAX_BITS = 15.6 * 8000
 MAX_SIZE = 16e+6
 AUDIO_BITRATE = 128
-filepath = sys.argv[-1]
 
 
 def get_duration(path):
@@ -27,37 +28,49 @@ def compress_video(in_path, out_path, bitrate_factor=1):
     system(f'rm {folder}/ffmpeg2pass-0.log*')
 
 
-filename = filepath.split('/')[-1]
-file_extension = filename.split('.')[-1]
-file_title = filename[:-len(file_extension) - 1]
+def main():
 
-should_compress = True
+    filepath = sys.argv[-1]
 
-out_path = f'{file_title}-WHATSAPP.mp4'
-in_path = filepath
+    if len(sys.argv) == 1:
+        raise ValueError('insira o caminho do vídeo')
 
-bitrate_factor = float(1)
-temp_in_path = None
+    filename = filepath.split('/')[-1]
+    file_extension = filename.split('.')[-1]
+    file_title = filename[:-len(file_extension) - 1]
 
-while should_compress:
+    should_compress = True
 
-    compress_video(in_path, out_path, bitrate_factor)
-    if temp_in_path:
-        remove(temp_in_path)
+    out_path = f'{file_title}-WHATSAPP.mp4'
+    in_path = filepath
 
-    out_size = path.getsize(out_path)
+    bitrate_factor = float(1)
+    temp_in_path = None
 
-    if out_size > MAX_SIZE:
-        print(
-            f'\n------------------\n'
-            f'Tamanho maior do que 16mb ({out_size*1e-6:.2f} mb)\
-                \n------------------\n'
-        )
-        bitrate_factor = bitrate_factor * 0.8
-        temp_in_path = out_path + '.temp'
-        rename(out_path, temp_in_path)
+    while should_compress:
+        compress_video(in_path, out_path, bitrate_factor)
 
-        in_path = temp_in_path
+        if temp_in_path:
+            remove(temp_in_path)
 
-    else:
-        should_compress = False
+        out_size = path.getsize(out_path)
+
+        if out_size > MAX_SIZE:
+            print(
+                f'\n------------------\n'
+                f'Tamanho maior do que 16mb ({out_size*1e-6:.2f} mb)'
+                'recomprimindo ...'
+                '\n------------------\n'
+            )
+            bitrate_factor = bitrate_factor * 0.8
+            temp_in_path = out_path + '.temp'
+            rename(out_path, temp_in_path)
+
+            in_path = temp_in_path
+
+        else:
+            should_compress = False
+
+
+if __name__ == '__main__':
+    main()
